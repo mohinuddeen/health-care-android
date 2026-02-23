@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="loading_layout" type="id" />
+    <item name="toolbar" type="id" />
+    <item name="tv_welcome" type="id" />
+    <item name="tv_subtitle" type="id" />
+    <item name="tv_long_loading" type="id" />
+    <item name="error_layout" type="id" />
+    <item name="tv_error" type="id" />
+    <item name="btn_retry" type="id" />
+    <item name="refresh_layout" type="id" />
+    <item name="content_layout" type="id" />
+</resources>
