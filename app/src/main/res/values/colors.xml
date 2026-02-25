@@ -2,7 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="teal">#FF009688</color>
+    <color name="teal">#FF008080</color>
+    <color name="dark_teal">#FF006666</color>
+    <color name="light_teal">#33008080</color>
     <color name="grey">#FF9E9E9E</color>
+    <color name="dark_grey">#FF37474F</color>
     <color name="light_grey">#FFF5F5F5</color>
+    <color name="amber">#FFFFC107</color>
+
 </resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/teal</item>
+        <item name="colorPrimaryVariant">@color/dark_teal</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+    <!-- Shape appearance for corner radius -->
+    <style name="ShapeAppearanceOverlay.App.CornerSize12Percent" parent="">
+        <item name="cornerSize">12%</item>
+    </style>
+</resources>

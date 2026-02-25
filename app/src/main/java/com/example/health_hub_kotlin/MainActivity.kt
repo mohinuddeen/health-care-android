@@ -6,12 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.example.health_hub_kotlin.databinding.ActivityMainBinding
 import com.example.health_hub_kotlin.ui.bookings.BookingsFragment
 import com.example.health_hub_kotlin.ui.home.HomeFragment
 import com.example.health_hub_kotlin.ui.profile.ProfileFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,18 +24,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //create light status bar
         // Set status bar color to white
         window.statusBarColor = getColor(android.R.color.white)
 
         // Make status bar icons dark (for light background)
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
-
-
+        // Handle system bars with padding only on the main content, not bottom navigation
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+
+            // Apply padding to the main layout but exclude the bottom
+            v.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = 0 // Don't add padding at the bottom
+            )
+
             insets
         }
 
@@ -47,12 +53,10 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_bookings -> {
-                    // TODO: Implement BookingsFragment
                     loadFragment(BookingsFragment())
                     true
                 }
                 R.id.navigation_profile -> {
-                    // TODO: Implement ProfileFragment
                     loadFragment(ProfileFragment())
                     true
                 }

@@ -12,6 +12,7 @@ import com.example.health_hub_kotlin.R
 import com.example.health_hub_kotlin.adapters.SubcategoryAdapter
 import com.example.health_hub_kotlin.adapters.ViewType
 import com.example.health_hub_kotlin.databinding.FragmentCategoryDetailBinding
+import com.example.health_hub_kotlin.ui.service.ServiceDetailFragment
 import com.example.health_hub_kotlin.viewmodel.CategoryState
 import com.example.health_hub_kotlin.viewmodel.CategoryViewModel
 import com.example.health_hub_kotlin.widgets.ErrorWidget
@@ -272,7 +273,12 @@ class CategoryDetailFragment : Fragment() {
 
     private fun navigateToServiceDetail(subcategory: com.example.health_hub_kotlin.models.Subcategory) {
         Log.d(TAG, "Navigating to service detail: ${subcategory.title}")
-        // TODO: Navigate to Service Detail screen
+
+        val fragment = ServiceDetailFragment.newInstance(subcategory.id, subcategory.title)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroyView() {

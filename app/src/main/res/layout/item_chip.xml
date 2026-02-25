@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Chip Text"
+    android:textColor="@color/teal"
+    android:textSize="13sp"
+    app:chipBackgroundColor="@color/light_teal"
+    app:chipStrokeColor="@color/teal"
+    app:chipStrokeWidth="1dp"
+    app:chipCornerRadius="30dp"
+    app:chipMinHeight="32dp" />
