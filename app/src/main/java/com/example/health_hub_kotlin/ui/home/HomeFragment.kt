@@ -58,14 +58,14 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerViews() {
         // Banner RecyclerView
-        bannerAdapter = BannerAdapter(emptyList())
+        bannerAdapter = BannerAdapter()
         binding.rvBanners.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = bannerAdapter
         }
 
         // Category RecyclerView
-        categoryAdapter = CategoryAdapter(emptyList()) { category ->
+        categoryAdapter = CategoryAdapter { category ->
             navigateToCategoryDetail(category)
         }
         binding.rvCategories.apply {
@@ -74,7 +74,7 @@ class HomeFragment : Fragment() {
         }
 
         // Features RecyclerView
-        featureAdapter = FeatureAdapter(emptyList())
+        featureAdapter = FeatureAdapter()
         binding.rvFeatures.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = featureAdapter
@@ -90,7 +90,7 @@ class HomeFragment : Fragment() {
         }
 
         // Packages RecyclerView
-        packageAdapter = PackageAdapter(emptyList())
+        packageAdapter = PackageAdapter()
         binding.rvPackages.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = packageAdapter
@@ -158,11 +158,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI(homeData: HomeResponse) {
-        bannerAdapter.updateData(homeData.banners)
-        categoryAdapter.updateData(homeData.categories)
-        featureAdapter.updateData(homeData.features)
+        bannerAdapter.submitList(homeData.banners)
+        categoryAdapter.submitList(homeData.categories)
+        featureAdapter.submitList(homeData.features)
         trendingAdapter.submitList(homeData.trendingServices)
-        packageAdapter.updateData(homeData.packages)
+        packageAdapter.submitList(homeData.packages)
     }
 
     private fun navigateToCategoryDetail(category: com.example.health_hub_kotlin.models.Category) {

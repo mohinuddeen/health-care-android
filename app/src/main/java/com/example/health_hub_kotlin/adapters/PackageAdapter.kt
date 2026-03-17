@@ -2,13 +2,15 @@ package com.example.health_hub_kotlin.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
 import com.example.health_hub_kotlin.databinding.ItemPackageBinding
 import com.example.health_hub_kotlin.models.Package
 
-class PackageAdapter(private var packages: List<Package>) :
-    RecyclerView.Adapter<PackageAdapter.PackageViewHolder>() {
+class PackageAdapter :
+    ListAdapter<Package, PackageAdapter.PackageViewHolder>(DIFF_CALLBACK) {
 
     inner class PackageViewHolder(private val binding: ItemPackageBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -34,14 +36,19 @@ class PackageAdapter(private var packages: List<Package>) :
     }
 
     override fun onBindViewHolder(holder: PackageViewHolder, position: Int) {
-        holder.bind(packages[position])
+        holder.bind(getItem(position))
     }
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Package>() {
 
-    override fun getItemCount() = packages.size
+            override fun areItemsTheSame(oldItem: Package, newItem: Package): Boolean {
+                return oldItem.id == newItem.id // ✅ unique ID comparison
+            }
 
-    fun updateData(newList: List<Package>) {
-        packages = newList
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: Package, newItem: Package): Boolean {
+                return oldItem == newItem // ✅ full object comparison
+            }
+        }
     }
 
 

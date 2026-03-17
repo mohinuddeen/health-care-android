@@ -2,21 +2,23 @@ package com.example.health_hub_kotlin.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.health_hub_kotlin.databinding.ItemCategoryBinding
 import com.example.health_hub_kotlin.models.Category
 
 class CategoryAdapter(
-    private var categories: List<Category>,
     private val onItemClick: (Category) -> Unit
-) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+) : ListAdapter<Category, CategoryAdapter.CategoryViewHolder>(DIFF_CALLBACK) {
 
-    inner class CategoryViewHolder(private var binding: ItemCategoryBinding) :
+    inner class CategoryViewHolder(private val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: Category) {
             binding.tvCategoryTitle.text = category.title
+
             Glide.with(binding.root.context)
                 .load(category.image)
                 .into(binding.ivCategory)
@@ -37,14 +39,19 @@ class CategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        holder.bind(categories[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount() = categories.size
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Category>() {
 
-    fun updateData(newList: List<Category>) {
-        categories = newList
-        notifyDataSetChanged()
+            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
-
 }

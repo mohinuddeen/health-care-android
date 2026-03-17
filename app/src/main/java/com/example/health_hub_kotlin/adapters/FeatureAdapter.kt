@@ -2,12 +2,14 @@ package com.example.health_hub_kotlin.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health_hub_kotlin.databinding.ItemFeatureBinding
 import com.example.health_hub_kotlin.models.Feature
 
-class FeatureAdapter(private var features: List<Feature>) :
-    RecyclerView.Adapter<FeatureAdapter.FeatureViewHolder>() {
+class FeatureAdapter :
+    ListAdapter<Feature, FeatureAdapter.FeatureViewHolder>(DIFF_CALLBACK) {
 
     inner class FeatureViewHolder(private val binding: ItemFeatureBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -29,14 +31,20 @@ class FeatureAdapter(private var features: List<Feature>) :
     }
 
     override fun onBindViewHolder(holder: FeatureViewHolder, position: Int) {
-        holder.bind(features[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount() = features.size
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Feature>() {
 
-    fun updateData(newList: List<Feature>) {
-        features = newList
-        notifyDataSetChanged()
+            override fun areItemsTheSame(oldItem: Feature, newItem: Feature): Boolean {
+                return oldItem.id == newItem.id // ✅ unique ID comparison
+            }
+
+            override fun areContentsTheSame(oldItem: Feature, newItem: Feature): Boolean {
+                return oldItem == newItem // ✅ full object comparison
+            }
+        }
     }
 
 }
