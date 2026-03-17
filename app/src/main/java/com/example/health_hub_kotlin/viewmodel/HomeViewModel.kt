@@ -6,88 +6,73 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.health_hub_kotlin.models.HomeResponse
 import com.example.health_hub_kotlin.network.RetrofitClient
+import com.example.health_hub_kotlin.repository.HomeRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-enum class HomeState {
-    LOADING,
-    LOADED,
-    ERROR,
-    REFRESHING
-}
+data class HomeUiState(
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val showLongLoading: Boolean = false,
+    val data: HomeResponse? = null,
+    val error: String? = null
+)
 
 class HomeViewModel : ViewModel() {
-
-    private val _homeData = MutableLiveData<HomeResponse>()
-    val homeData: LiveData<HomeResponse> = _homeData
-
-    private val _state = MutableLiveData<HomeState>()
-    val state: LiveData<HomeState> = _state
-
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
-
-    private val _showLongLoading = MutableLiveData(false)
-    val showLongLoading: LiveData<Boolean> = _showLongLoading
+    private val repository = HomeRepository(RetrofitClient.instance)
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
         fetchHomeData()
     }
-
     fun fetchHomeData() {
         viewModelScope.launch {
-            _state.value = HomeState.LOADING
-            _showLongLoading.value = false
 
-            // Simulate long loading check
-            viewModelScope.launch {
-                kotlinx.coroutines.delay(5000)
-                if (_state.value == HomeState.LOADING) {
-                    _showLongLoading.value = true
-                }
+//            _uiState.value = HomeUiState(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            val longLoadingJob = launch {
+                delay(5000)
+                _uiState.value = _uiState.value?.copy(showLongLoading = true)!!
             }
 
             try {
-                val response = RetrofitClient.instance.getHomeData()
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        _homeData.value = it
-                        _state.value = HomeState.LOADED
-                        _error.value = null
-                    }
-                } else {
-                    _state.value = HomeState.ERROR
-                    _error.value = "Failed to load data: ${response.code()}"
-                }
-            } catch (e: IOException) {
-                _state.value = HomeState.ERROR
-                _error.value = "Network error: ${e.message}"
+                val data = repository.getHomeData()
+                longLoadingJob.cancel()
+
+                _uiState.value = HomeUiState(
+                    data = data
+                )
+
             } catch (e: Exception) {
-                _state.value = HomeState.ERROR
-                _error.value = "Unexpected error: ${e.message}"
+                longLoadingJob.cancel()
+
+                _uiState.value = HomeUiState(
+                    error = e.message
+                )
             }
         }
     }
 
     fun refreshData() {
         viewModelScope.launch {
-            _state.value = HomeState.REFRESHING
+
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
-                val response = RetrofitClient.instance.getHomeData()
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        _homeData.value = it
-                        _state.value = HomeState.LOADED
-                        _error.value = null
-                    }
-                } else {
-                    _state.value = HomeState.ERROR
-                    _error.value = "Failed to refresh data: ${response.code()}"
-                }
-            } catch (e: IOException) {
-                _state.value = HomeState.ERROR
-                _error.value = "Network error: ${e.message}"
+                val data = repository.getHomeData()
+
+                _uiState.value = HomeUiState(
+                    data = data
+                )
+
+            } catch (e: Exception) {
+                _uiState.value = HomeUiState(
+                    error = e.message
+                )
             }
         }
     }

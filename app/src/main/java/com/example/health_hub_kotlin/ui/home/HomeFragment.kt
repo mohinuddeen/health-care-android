@@ -12,10 +12,15 @@ import com.example.health_hub_kotlin.R
 import com.example.health_hub_kotlin.adapters.*
 import com.example.health_hub_kotlin.databinding.FragmentHomeBinding
 import com.example.health_hub_kotlin.models.Category
+import com.example.health_hub_kotlin.models.HomeResponse
 import com.example.health_hub_kotlin.models.TrendingService
 import com.example.health_hub_kotlin.ui.category.CategoryDetailFragment
-import com.example.health_hub_kotlin.viewmodel.HomeState
 import com.example.health_hub_kotlin.viewmodel.HomeViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.Lifecycle
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 class HomeFragment : Fragment() {
 
@@ -28,6 +33,7 @@ class HomeFragment : Fragment() {
     private lateinit var featureAdapter: FeatureAdapter
     private lateinit var trendingAdapter: TrendingServiceAdapter
     private lateinit var packageAdapter: PackageAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,7 +81,7 @@ class HomeFragment : Fragment() {
         }
 
         // Trending Services RecyclerView
-        trendingAdapter = TrendingServiceAdapter(emptyList()) { service ->
+        trendingAdapter = TrendingServiceAdapter { service ->
             handleBookService(service)
         }
         binding.rvTrendingServices.apply {
@@ -112,54 +118,51 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                HomeState.LOADING -> showLoading()
-                HomeState.LOADED -> showContent()
-                HomeState.ERROR -> showError()
-                HomeState.REFRESHING -> showRefreshing()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                viewModel.uiState.collect { state ->
+
+                    // Loading
+                    binding.loadingLayout.visibility =
+                        if (state.isLoading) View.VISIBLE else View.GONE
+
+                    // Content visibility
+                    binding.contentLayout.visibility =
+                        if (!state.isLoading && state.data != null) View.VISIBLE else View.GONE
+
+                    // Error visibility
+                    binding.errorLayout.visibility =
+                        if (state.error != null) View.VISIBLE else View.GONE
+
+                    // Swipe refresh
+                    binding.swipeRefreshLayout.isRefreshing = state.isRefreshing
+
+                    // Long loading text
+                    binding.tvLongLoading.visibility =
+                        if (state.showLongLoading) View.VISIBLE else View.GONE
+
+                    // Error text
+                    state.error?.let {
+                        binding.tvError.text = it
+                    }
+
+                    // Update data if available
+                    state.data?.let {
+                        updateUI(it)
+                    }
+                }
             }
-        }
-
-        viewModel.homeData.observe(viewLifecycleOwner) { homeData ->
-            updateUI(homeData)
-        }
-
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            errorMessage?.let {
-                binding.tvError.text = it
-            }
-        }
-
-        viewModel.showLongLoading.observe(viewLifecycleOwner) { showLong ->
-            binding.tvLongLoading.visibility = if (showLong) View.VISIBLE else View.GONE
         }
     }
 
-    private fun updateUI(homeData: com.example.health_hub_kotlin.models.HomeResponse) {
-        // Update banners
-        bannerAdapter = BannerAdapter(homeData.banners)
-        binding.rvBanners.adapter = bannerAdapter
-
-        // Update categories
-        categoryAdapter = CategoryAdapter(homeData.categories) { category ->
-            navigateToCategoryDetail(category)
-        }
-        binding.rvCategories.adapter = categoryAdapter
-
-        // Update features
-        featureAdapter = FeatureAdapter(homeData.features)
-        binding.rvFeatures.adapter = featureAdapter
-
-        // Update trending services
-        trendingAdapter = TrendingServiceAdapter(homeData.trendingServices) { service ->
-            handleBookService(service)
-        }
-        binding.rvTrendingServices.adapter = trendingAdapter
-
-        // Update packages
-        packageAdapter = PackageAdapter(homeData.packages)
-        binding.rvPackages.adapter = packageAdapter
+    private fun updateUI(homeData: HomeResponse) {
+        bannerAdapter.updateData(homeData.banners)
+        categoryAdapter.updateData(homeData.categories)
+        featureAdapter.updateData(homeData.features)
+        trendingAdapter.submitList(homeData.trendingServices)
+        packageAdapter.updateData(homeData.packages)
     }
 
     private fun navigateToCategoryDetail(category: com.example.health_hub_kotlin.models.Category) {

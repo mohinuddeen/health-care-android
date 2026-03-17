@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.health_hub_kotlin.databinding.ItemFeatureBinding
 import com.example.health_hub_kotlin.models.Feature
 
-class FeatureAdapter(private val features: List<Feature>) :
+class FeatureAdapter(private var features: List<Feature>) :
     RecyclerView.Adapter<FeatureAdapter.FeatureViewHolder>() {
 
     inner class FeatureViewHolder(private val binding: ItemFeatureBinding) :
@@ -33,4 +33,10 @@ class FeatureAdapter(private val features: List<Feature>) :
     }
 
     override fun getItemCount() = features.size
+
+    fun updateData(newList: List<Feature>) {
+        features = newList
+        notifyDataSetChanged()
+    }
+
 }

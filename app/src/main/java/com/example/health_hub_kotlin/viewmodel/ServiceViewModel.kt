@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.health_hub_kotlin.models.Service
 import com.example.health_hub_kotlin.network.RetrofitClient
+import com.example.health_hub_kotlin.repository.ServiceRepository
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -27,6 +28,8 @@ class ServiceViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    val repository = ServiceRepository(RetrofitClient.instance)
+
     private val tag = "ServiceViewModel"
 
     fun fetchServiceData(serviceId: Int) {
@@ -35,7 +38,9 @@ class ServiceViewModel : ViewModel() {
             Log.d(tag, "Fetching service data for ID: $serviceId")
 
             try {
-                val response = RetrofitClient.instance.getServiceData(serviceId)
+//                val response = RetrofitClient.instance.getServiceData(serviceId)
+                val response = repository.getServiceData(serviceId)
+
                 Log.d(tag, "Response code: ${response.code()}")
 
                 if (response.isSuccessful) {

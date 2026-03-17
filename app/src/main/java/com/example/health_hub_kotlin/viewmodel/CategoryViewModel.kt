@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.health_hub_kotlin.models.CategoryData
 import com.example.health_hub_kotlin.network.RetrofitClient
+import com.example.health_hub_kotlin.repository.CategoryRepository
+
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -27,6 +29,9 @@ class CategoryViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    val repository = CategoryRepository(RetrofitClient.instance)
+
+
     private val tag = "CategoryViewModel"
 
     fun fetchCategoryData(categoryId: Int) {
@@ -35,7 +40,8 @@ class CategoryViewModel : ViewModel() {
             Log.d(tag, "Fetching category data for ID: $categoryId")
 
             try {
-                val response = RetrofitClient.instance.getCategoryData(categoryId)
+//                val response = RetrofitClient.instance.getCategoryData(categoryId)
+                val response = repository.getCategoryData(categoryId)
                 if (response.isSuccessful) {
                     response.body()?.let {
                         Log.d(tag, "Data received successfully. Subcategories: ${it.subcategories.size}")

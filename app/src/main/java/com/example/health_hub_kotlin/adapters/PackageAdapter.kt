@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.health_hub_kotlin.databinding.ItemPackageBinding
 import com.example.health_hub_kotlin.models.Package
 
-class PackageAdapter(private val packages: List<Package>) :
+class PackageAdapter(private var packages: List<Package>) :
     RecyclerView.Adapter<PackageAdapter.PackageViewHolder>() {
 
     inner class PackageViewHolder(private val binding: ItemPackageBinding) :
@@ -38,4 +38,11 @@ class PackageAdapter(private val packages: List<Package>) :
     }
 
     override fun getItemCount() = packages.size
+
+    fun updateData(newList: List<Package>) {
+        packages = newList
+        notifyDataSetChanged()
+    }
+
+
 }

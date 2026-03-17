@@ -8,11 +8,11 @@ import com.example.health_hub_kotlin.databinding.ItemCategoryBinding
 import com.example.health_hub_kotlin.models.Category
 
 class CategoryAdapter(
-    private val categories: List<Category>,
+    private var categories: List<Category>,
     private val onItemClick: (Category) -> Unit
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 
-    inner class CategoryViewHolder(private val binding: ItemCategoryBinding) :
+    inner class CategoryViewHolder(private var binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: Category) {
@@ -41,4 +41,10 @@ class CategoryAdapter(
     }
 
     override fun getItemCount() = categories.size
+
+    fun updateData(newList: List<Category>) {
+        categories = newList
+        notifyDataSetChanged()
+    }
+
 }

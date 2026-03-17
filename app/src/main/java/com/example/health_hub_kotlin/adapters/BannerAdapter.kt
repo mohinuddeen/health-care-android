@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.health_hub_kotlin.databinding.ItemBannerBinding
 import com.example.health_hub_kotlin.models.Banner
 
-class BannerAdapter(private val banners: List<Banner>) :
+class BannerAdapter(private var banners: List<Banner>) :
     RecyclerView.Adapter<BannerAdapter.BannerViewHolder>() {
 
     inner class BannerViewHolder(private val binding: ItemBannerBinding) :
@@ -34,5 +34,10 @@ class BannerAdapter(private val banners: List<Banner>) :
         holder.bind(banners[position])
     }
 
+
     override fun getItemCount() = banners.size
+    fun updateData(newList: List<Banner>) {
+        banners = newList
+        notifyDataSetChanged()
+    }
 }

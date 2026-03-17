@@ -1,16 +1,17 @@
 package com.example.health_hub_kotlin.adapters
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health_hub_kotlin.databinding.ItemTrendingServiceBinding
 import com.example.health_hub_kotlin.models.TrendingService
-import android.graphics.Paint
 
 class TrendingServiceAdapter(
-    private val services: List<TrendingService>,
     private val onBookClick: (TrendingService) -> Unit
-) : RecyclerView.Adapter<TrendingServiceAdapter.TrendingServiceViewHolder>() {
+) : ListAdapter<TrendingService, TrendingServiceAdapter.TrendingServiceViewHolder>(DiffCallback()) {
 
     inner class TrendingServiceViewHolder(private val binding: ItemTrendingServiceBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +22,6 @@ class TrendingServiceAdapter(
             binding.tvDiscountedPrice.text = "₹${service.discountPrice}"
             binding.tvRating.text = "${service.rating} (${service.reviews}+)"
             binding.tvOriginalPrice.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-
 
             binding.btnBook.setOnClickListener {
                 onBookClick(service)
@@ -39,8 +39,22 @@ class TrendingServiceAdapter(
     }
 
     override fun onBindViewHolder(holder: TrendingServiceViewHolder, position: Int) {
-        holder.bind(services[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount() = services.size
+    class DiffCallback : DiffUtil.ItemCallback<TrendingService>() {
+        override fun areItemsTheSame(
+            oldItem: TrendingService,
+            newItem: TrendingService
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(
+            oldItem: TrendingService,
+            newItem: TrendingService
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 }
